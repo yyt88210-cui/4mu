@@ -165,18 +165,13 @@ function renderHome() {
 function renderRoom(animal) {
   const isActive = animal.id === state.activeAnimalId;
   const toys = animal.toys.length
-    ? animal.toys.map((toy) => `<span class="toy">${toy}</span>`).join("")
+    ? animal.toys.slice(0, 3).map((toy) => `<span class="toy" aria-hidden="true">${getToyEmoji(toy)}</span>`).join("")
     : `<span class="empty-state">还没有玩具</span>`;
 
   return `
-    <article class="room-card ${isActive ? "active" : ""}" data-action="open-room" data-id="${animal.id}" tabindex="0">
-      <div class="room-top">
-        <h2 class="animal-name">
-          <span class="animal-emoji" style="background:${getAnimalColor(animal.id)}">${animal.emoji}</span>
-          ${animal.name}
-        </h2>
-        <span class="active-label">${animal.giftType}</span>
-      </div>
+    <article class="room-card ${isActive ? "active" : ""}" data-action="open-room" data-id="${animal.id}" tabindex="0" aria-label="${animal.name}的房间">
+      <span class="animal-emoji" style="background:${getAnimalColor(animal.id)}">${animal.emoji}</span>
+      <h2 class="animal-name">${animal.name}</h2>
       <div class="toy-shelf">${toys}</div>
     </article>
   `;
@@ -200,21 +195,17 @@ function renderRoomDetail(animalId) {
 
   app.innerHTML = `
     <section class="screen detail-screen">
-      <button class="secondary-button back-button" type="button" data-action="back-home">返回房间列表</button>
+      <button class="back-button" type="button" data-action="back-home" aria-label="返回房间列表">&larr;</button>
       <div class="detail-room" style="background:${getAnimalColor(animal.id)}">
         <div class="speech">${interaction.message || animal.intro}</div>
         <div class="detail-animal ${detailClass}">${animalDisplay}</div>
         <h1 class="detail-title">${animal.name}的房间</h1>
-        <p class="detail-copy">礼物类型：${animal.giftType}</p>
-      </div>
-      <div class="detail-gifts">
-        <h2>已拥有的礼物</h2>
-        <div class="detail-gift-list">
+        <div class="detail-gift-scatter" aria-label="房间里的礼物">
           ${animal.toys
             .map(
               (toy) => `
-                <button class="detail-gift ${interaction.toy === toy ? "active" : ""}" type="button" data-action="interact-gift" data-id="${animal.id}" data-toy="${toy}">
-                  ${toy}
+                <button class="detail-gift ${interaction.toy === toy ? "active" : ""}" type="button" data-action="interact-gift" data-id="${animal.id}" data-toy="${toy}" aria-label="${toy}">
+                  ${getToyEmoji(toy)}
                 </button>
               `
             )
