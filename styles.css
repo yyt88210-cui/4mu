@@ -323,6 +323,125 @@ button {
   font-size: 28px;
 }
 
+.gift-owner {
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.detail-screen {
+  display: grid;
+  align-content: start;
+  gap: 14px;
+}
+
+.back-button {
+  width: 100%;
+}
+
+.detail-room {
+  min-height: 330px;
+  border: 2px solid var(--line);
+  border-radius: 8px;
+  padding: 18px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+}
+
+.speech {
+  width: 100%;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.84);
+  padding: 12px;
+  color: var(--text);
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.detail-animal {
+  min-height: 120px;
+  display: grid;
+  place-items: center;
+  font-size: 82px;
+  line-height: 1;
+}
+
+.detail-animal.is-shake {
+  animation: shake 360ms ease-in-out 2;
+}
+
+.detail-animal.is-eat {
+  animation: eat 520ms ease-in-out 2;
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-6deg);
+  }
+  75% {
+    transform: rotate(6deg);
+  }
+}
+
+@keyframes eat {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.12) translateY(-4px);
+  }
+}
+
+.detail-title {
+  margin: 0;
+  font-size: 30px;
+}
+
+.detail-copy {
+  margin: 0;
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.detail-gifts {
+  border: 2px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  padding: 14px;
+}
+
+.detail-gifts h2 {
+  margin: 0 0 12px;
+  font-size: 22px;
+}
+
+.detail-gift-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.detail-gift {
+  min-height: 58px;
+  border: 2px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-soft);
+  color: var(--text);
+  cursor: pointer;
+  font-weight: 900;
+}
+
+.detail-gift.active {
+  border-color: var(--accent-strong);
+  background: #fff6df;
+}
+
 .modal {
   position: fixed;
   inset: 0;

@@ -3,16 +3,17 @@ const MAX_STARS = 3;
 
 const tasks = ["数学练习", "读绘本", "收拾玩具", "画画", "运动", "劳动", "其他"];
 const gifts = [
-  { id: "red-car", name: "红色小汽车", emoji: "🚗" },
-  { id: "blue-blocks", name: "蓝色积木", emoji: "🧱" },
-  { id: "bear-doll", name: "小熊玩偶", emoji: "🧸" },
+  { id: "sun-hat", animalId: "rabbit", name: "太阳帽", emoji: "👒", type: "帽子" },
+  { id: "jellyfish", animalId: "cat", name: "水母朋友", emoji: "🪼", type: "海洋动物" },
+  { id: "apple", animalId: "dog", name: "红苹果", emoji: "🍎", type: "水果" },
+  { id: "rainbow-painting", animalId: "panda", name: "彩虹画", emoji: "🖼️", type: "画" },
 ];
 
 const defaultAnimals = [
-  { id: "rabbit", name: "小兔", emoji: "🐰", toys: ["球", "书"] },
-  { id: "cat", name: "小猫", emoji: "🐱", toys: ["毯子", "杯子"] },
-  { id: "dog", name: "小狗", emoji: "🐶", toys: ["骨头", "飞盘"] },
-  { id: "panda", name: "熊猫", emoji: "🐼", toys: ["竹子", "枕头"] },
+  { id: "rabbit", name: "小兔", emoji: "🐰", giftType: "帽子", intro: "欢迎来我的房间，今天想试试新帽子！", toys: ["🎩 小礼帽", "🧢 蓝帽子"], equippedGiftId: "" },
+  { id: "cat", name: "小猫", emoji: "🐱", giftType: "海洋动物", intro: "欢迎来我的房间，海洋朋友会跳舞。", toys: ["🐠 小鱼", "🐙 章鱼"], equippedGiftId: "" },
+  { id: "dog", name: "小狗", emoji: "🐶", giftType: "水果", intro: "欢迎来我的房间，我会假装吃水果。", toys: ["🍌 香蕉", "🍓 草莓"], equippedGiftId: "" },
+  { id: "panda", name: "熊猫", emoji: "🐼", giftType: "画", intro: "欢迎来我的房间，墙上的画会抖一抖。", toys: ["🌈 彩虹画", "⭐ 星星画"], equippedGiftId: "" },
 ];
 
 const app = document.querySelector("#app");
@@ -24,6 +25,10 @@ let state = loadState();
 let audioContext;
 let musicTimer;
 let musicPlaying = false;
+let interaction = {
+  toy: "",
+  message: "",
+};
 
 function loadState() {
   try {
@@ -51,9 +56,11 @@ function loadState() {
 function mergeAnimals(savedAnimals) {
   return defaultAnimals.map((animal) => {
     const saved = savedAnimals.find((item) => item.id === animal.id);
+    const hasV2GiftType = saved?.giftType === animal.giftType;
     return {
       ...animal,
-      toys: Array.isArray(saved?.toys) ? saved.toys : animal.toys,
+      toys: hasV2GiftType && Array.isArray(saved?.toys) ? saved.toys : animal.toys,
+      equippedGiftId: saved?.equippedGiftId || "",
     };
   });
 }
@@ -68,7 +75,7 @@ function navigate(route) {
 
 function getRoute() {
   const route = window.location.hash || (state.hasStarted ? "#/home" : "#/start");
-  if (route === "#/home" || route === "#/gift" || route === "#/start") {
+  if (route === "#/home" || route === "#/gift" || route === "#/start" || route.startsWith("#/room/")) {
     return route;
   }
   return state.hasStarted ? "#/home" : "#/start";
@@ -84,6 +91,11 @@ function render() {
 
   if (route === "#/home") {
     renderHome();
+    return;
+  }
+
+  if (route.startsWith("#/room/")) {
+    renderRoomDetail(route.replace("#/room/", ""));
     return;
   }
 
@@ -157,34 +169,75 @@ function renderRoom(animal) {
     : `<span class="empty-state">还没有玩具</span>`;
 
   return `
-    <article class="room-card ${isActive ? "active" : ""}" data-action="select-animal" data-id="${animal.id}" tabindex="0">
+    <article class="room-card ${isActive ? "active" : ""}" data-action="open-room" data-id="${animal.id}" tabindex="0">
       <div class="room-top">
         <h2 class="animal-name">
           <span class="animal-emoji" style="background:${getAnimalColor(animal.id)}">${animal.emoji}</span>
           ${animal.name}
         </h2>
-        ${isActive ? `<span class="active-label">奖励给它</span>` : ""}
+        <span class="active-label">${animal.giftType}</span>
       </div>
       <div class="toy-shelf">${toys}</div>
     </article>
   `;
 }
 
-function renderGift() {
-  const animal = getActiveAnimal();
+function renderRoomDetail(animalId) {
+  const animal = state.animals.find((item) => item.id === animalId);
+  if (!animal) {
+    navigate("#/home");
+    return;
+  }
 
+  state.activeAnimalId = animal.id;
+  saveState();
+
+  const equippedHat = animal.id === "rabbit" && animal.equippedGiftId
+    ? animal.toys.find((toy) => getToyId(toy) === animal.equippedGiftId)
+    : "";
+  const detailClass = interaction.toy ? `is-${getInteractionType(animal.id)}` : "";
+  const animalDisplay = equippedHat ? `${getToyEmoji(equippedHat)} ${animal.emoji}` : animal.emoji;
+
+  app.innerHTML = `
+    <section class="screen detail-screen">
+      <button class="secondary-button back-button" type="button" data-action="back-home">返回房间列表</button>
+      <div class="detail-room" style="background:${getAnimalColor(animal.id)}">
+        <div class="speech">${interaction.message || animal.intro}</div>
+        <div class="detail-animal ${detailClass}">${animalDisplay}</div>
+        <h1 class="detail-title">${animal.name}的房间</h1>
+        <p class="detail-copy">礼物类型：${animal.giftType}</p>
+      </div>
+      <div class="detail-gifts">
+        <h2>已拥有的礼物</h2>
+        <div class="detail-gift-list">
+          ${animal.toys
+            .map(
+              (toy) => `
+                <button class="detail-gift ${interaction.toy === toy ? "active" : ""}" type="button" data-action="interact-gift" data-id="${animal.id}" data-toy="${toy}">
+                  ${toy}
+                </button>
+              `
+            )
+            .join("")}
+        </div>
+      </div>
+    </section>
+  `;
+}
+
+function renderGift() {
   app.innerHTML = `
     <section class="screen gift-screen">
       <div class="gift-panel">
         <h1 class="gift-title">太棒了！</h1>
-        <p class="gift-copy">你可以给${animal.name}选择一个新玩具。</p>
+        <p class="gift-copy">选择一个新礼物，它会自动送到喜欢它的小动物房间。</p>
         <div class="gift-list">
           ${gifts
             .map(
               (gift) => `
                 <button class="gift-button" type="button" data-action="choose-gift" data-gift-id="${gift.id}">
                   <span class="gift-emoji">${gift.emoji}</span>
-                  ${gift.name}
+                  ${gift.name}<span class="gift-owner">送给${getAnimalName(gift.animalId)}</span>
                 </button>
               `
             )
@@ -207,6 +260,10 @@ function getAnimalColor(id) {
 
 function getActiveAnimal() {
   return state.animals.find((animal) => animal.id === state.activeAnimalId) || state.animals[0];
+}
+
+function getAnimalName(animalId) {
+  return state.animals.find((animal) => animal.id === animalId)?.name || "小动物";
 }
 
 function openTaskModal() {
@@ -237,12 +294,14 @@ function chooseGift(giftId) {
   const gift = gifts.find((item) => item.id === giftId);
   if (!gift) return;
 
-  const animal = getActiveAnimal();
+  const animal = state.animals.find((item) => item.id === gift.animalId) || getActiveAnimal();
   animal.toys.push(`${gift.emoji} ${gift.name}`);
+  state.activeAnimalId = animal.id;
   state.stars = 0;
   state.hasStarted = true;
+  clearInteraction();
   saveState();
-  navigate("#/home");
+  navigate(`#/room/${animal.id}`);
 }
 
 function startApp() {
@@ -255,6 +314,69 @@ function selectAnimal(id) {
   state.activeAnimalId = id;
   saveState();
   render();
+}
+
+function openRoom(id) {
+  state.activeAnimalId = id;
+  clearInteraction();
+  saveState();
+  navigate(`#/room/${id}`);
+}
+
+function goHome() {
+  clearInteraction();
+  navigate("#/home");
+}
+
+function interactGift(animalId, toy) {
+  const animal = state.animals.find((item) => item.id === animalId);
+  if (!animal) return;
+
+  interaction.toy = toy;
+
+  if (animal.id === "rabbit") {
+    animal.equippedGiftId = getToyId(toy);
+    interaction.message = `${animal.name}戴上了${getToyName(toy)}！`;
+  }
+
+  if (animal.id === "cat") {
+    interaction.message = `${getToyName(toy)}抖一抖，和${animal.name}打招呼。`;
+  }
+
+  if (animal.id === "dog") {
+    interaction.message = `${animal.name}假装吃了一口${getToyName(toy)}。`;
+  }
+
+  if (animal.id === "panda") {
+    interaction.message = `${getToyName(toy)}在墙上抖一抖。`;
+  }
+
+  saveState();
+  renderRoomDetail(animalId);
+}
+
+function getInteractionType(animalId) {
+  if (animalId === "dog") return "eat";
+  return "shake";
+}
+
+function getToyId(toy) {
+  return toy.replace(/\s+/g, "-").toLowerCase();
+}
+
+function getToyEmoji(toy) {
+  return toy.trim().split(/\s+/)[0] || "";
+}
+
+function getToyName(toy) {
+  return toy.replace(/^\S+\s*/, "");
+}
+
+function clearInteraction() {
+  interaction = {
+    toy: "",
+    message: "",
+  };
 }
 
 function toggleMusic() {
@@ -302,16 +424,18 @@ app.addEventListener("click", (event) => {
   if (action === "start") startApp();
   if (action === "music") toggleMusic();
   if (action === "open-checkin") openTaskModal();
-  if (action === "select-animal") selectAnimal(target.dataset.id);
+  if (action === "open-room") openRoom(target.dataset.id);
+  if (action === "back-home") goHome();
+  if (action === "interact-gift") interactGift(target.dataset.id, target.dataset.toy);
   if (action === "choose-gift") chooseGift(target.dataset.giftId);
 });
 
 app.addEventListener("keydown", (event) => {
   if (event.key !== "Enter" && event.key !== " ") return;
-  const target = event.target.closest('[data-action="select-animal"]');
+  const target = event.target.closest('[data-action="open-room"]');
   if (!target) return;
   event.preventDefault();
-  selectAnimal(target.dataset.id);
+  openRoom(target.dataset.id);
 });
 
 taskList.addEventListener("click", (event) => {
