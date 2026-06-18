@@ -1,0 +1,405 @@
+:root {
+  color-scheme: light;
+  --bg: #f6f7fb;
+  --panel: #ffffff;
+  --panel-soft: #eef2f7;
+  --text: #273043;
+  --muted: #6d7585;
+  --line: #dce2ea;
+  --accent: #ffbf3f;
+  --accent-strong: #f48b24;
+  --blue: #8fc7ff;
+  --green: #99db8f;
+  --pink: #ffb1c8;
+  --purple: #c8b6ff;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+}
+
+button {
+  border: 0;
+  font: inherit;
+}
+
+.app {
+  min-height: 100vh;
+  padding: 18px;
+}
+
+.screen {
+  max-width: 520px;
+  min-height: calc(100vh - 36px);
+  margin: 0 auto;
+}
+
+.start-screen {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 22px;
+}
+
+.top-date {
+  color: var(--muted);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.hero-title {
+  margin: 12px 0 6px;
+  font-size: 34px;
+  line-height: 1.1;
+  letter-spacing: 0;
+}
+
+.hero-copy {
+  margin: 0;
+  color: var(--muted);
+  font-size: 18px;
+  line-height: 1.5;
+}
+
+.wallpaper {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 24px 0;
+}
+
+.wallpaper-animal {
+  min-height: 132px;
+  border: 2px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  display: grid;
+  place-items: center;
+  font-size: 54px;
+  animation: float 3s ease-in-out infinite;
+}
+
+.wallpaper-animal:nth-child(2) {
+  animation-delay: 0.3s;
+}
+
+.wallpaper-animal:nth-child(3) {
+  animation-delay: 0.6s;
+}
+
+.wallpaper-animal:nth-child(4) {
+  animation-delay: 0.9s;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.start-actions {
+  display: grid;
+  gap: 12px;
+}
+
+.primary-button,
+.secondary-button,
+.task-button,
+.gift-button {
+  min-height: 56px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.primary-button {
+  background: var(--accent);
+  color: #3b2a00;
+  box-shadow: 0 8px 0 #d98d18;
+}
+
+.secondary-button {
+  background: var(--panel);
+  color: var(--text);
+  border: 2px solid var(--line);
+}
+
+.home-screen {
+  padding-bottom: 96px;
+}
+
+.home-head {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  margin: -18px -18px 16px;
+  padding: 16px 18px;
+  background: rgba(246, 247, 251, 0.94);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+
+.home-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.home-title {
+  margin: 0;
+  font-size: 24px;
+}
+
+.date-pill {
+  color: var(--muted);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.energy {
+  margin-top: 14px;
+}
+
+.energy-label {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-weight: 800;
+}
+
+.energy-track {
+  height: 18px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--panel-soft);
+  border: 1px solid var(--line);
+}
+
+.energy-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent), var(--accent-strong));
+  transition: width 180ms ease;
+}
+
+.room-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.room-card {
+  border: 2px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  padding: 14px;
+  cursor: pointer;
+}
+
+.room-card.active {
+  border-color: var(--accent-strong);
+  box-shadow: 0 0 0 4px rgba(244, 139, 36, 0.16);
+}
+
+.room-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.animal-name {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font-size: 22px;
+}
+
+.animal-emoji {
+  width: 54px;
+  height: 54px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  background: var(--panel-soft);
+  font-size: 34px;
+}
+
+.active-label {
+  color: var(--accent-strong);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.toy-shelf {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--line);
+}
+
+.toy {
+  min-height: 38px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--panel-soft);
+  display: inline-flex;
+  align-items: center;
+  font-weight: 800;
+}
+
+.checkin-button {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  min-width: 132px;
+  min-height: 62px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #3b2a00;
+  box-shadow: 0 8px 0 #d98d18;
+  cursor: pointer;
+  font-weight: 900;
+  z-index: 3;
+}
+
+.gift-screen {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 20px;
+}
+
+.gift-panel {
+  border-radius: 8px;
+  border: 2px solid var(--line);
+  background: var(--panel);
+  padding: 22px;
+}
+
+.gift-title {
+  margin: 0 0 8px;
+  font-size: 34px;
+}
+
+.gift-copy {
+  margin: 0;
+  color: var(--muted);
+  font-size: 18px;
+  line-height: 1.5;
+}
+
+.gift-list {
+  display: grid;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.gift-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: var(--panel-soft);
+  color: var(--text);
+  border: 2px solid var(--line);
+}
+
+.gift-emoji {
+  font-size: 28px;
+}
+
+.modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(39, 48, 67, 0.42);
+  z-index: 5;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal-card {
+  width: min(100%, 520px);
+  max-height: 86vh;
+  overflow: auto;
+  border-radius: 8px;
+  background: var(--panel);
+  padding: 16px;
+}
+
+.modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.modal-head h2 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.icon-button {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  background: var(--panel-soft);
+  cursor: pointer;
+  font-size: 28px;
+  line-height: 1;
+}
+
+.task-list {
+  display: grid;
+  gap: 10px;
+}
+
+.task-button {
+  background: var(--panel-soft);
+  color: var(--text);
+  border: 2px solid var(--line);
+}
+
+.empty-state {
+  color: var(--muted);
+  font-weight: 700;
+}
+
+@media (min-width: 720px) {
+  .app {
+    padding: 28px;
+  }
+
+  .screen {
+    min-height: calc(100vh - 56px);
+  }
+
+  .room-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .modal {
+    align-items: center;
+  }
+}

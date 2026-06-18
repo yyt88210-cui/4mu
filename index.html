@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>小动物星星房间</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main id="app" class="app" aria-live="polite"></main>
+
+    <div id="task-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="task-title">
+      <div class="modal-card">
+        <div class="modal-head">
+          <h2 id="task-title">选择完成的任务吧！</h2>
+          <button id="close-task-modal" class="icon-button" type="button" aria-label="关闭打卡弹窗">×</button>
+        </div>
+        <div id="task-list" class="task-list"></div>
+      </div>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
